@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Animal Species Predictor</title>
+<style>
+    /* Body & Background */
+    body {
+      margin: 0;
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #000428, #004e92);
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+      text-align: center;
+    }
+
+    /* Container / Card */
+    .container {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 25px;
+      padding: 40px;
+      width: 420px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 8px 40px rgba(0,0,0,0.7);
+      animation: floatIn 1.2s ease;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Title */
+    h1 {
+      font-size: 28px;
+      margin-bottom: 25px;
+      color: #00eaff;
+      text-shadow: 0 0 15px rgba(0, 234, 255, 0.6);
+      animation: glow 2s ease-in-out infinite alternate;
+    }
+
+    /* Drop Zone */
+    .drop-zone {
+      border: 2px dashed #00eaff;
+      border-radius: 15px;
+      padding: 35px;
+      margin-bottom: 25px;
+      background: rgba(255, 255, 255, 0.08);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: #fff;
+    }
+    .drop-zone:hover {
+      background: rgba(0, 234, 255, 0.08);
+      transform: scale(1.05);
+      box-shadow: 0 0 20px rgba(0, 234, 255, 0.4);
+    }
+    .drop-zone input { display: none; }
+
+    /* Button */
+    button {
+      background: linear-gradient(90deg, #00eaff, #00ff88);
+      border: none;
+      color: #000;
+      padding: 14px 28px;
+      border-radius: 50px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+      box-shadow: 0 0 15px rgba(0, 234, 255, 0.6);
+    }
+    button:hover {
+      transform: scale(1.08);
+      box-shadow: 0 0 25px rgba(0, 234, 255, 0.9);
+    }
+
+    /* Image Preview */
+    #preview {
+      max-width: 90%;
+      border-radius: 15px;
+      margin-top: 15px;
+      display: none;
+      box-shadow: 0 0 25px rgba(0,234,255,0.4);
+      animation: fadeIn 1s ease;
+    }
+
+    /* Result */
+    .result {
+      margin-top: 20px;
+      font-size: 18px;
+      color: #00ff88;
+      font-weight: bold;
+      padding: 12px;
+      border-radius: 12px;
+      background: rgba(0,255,136,0.1);
+      box-shadow: 0 0 15px rgba(0,255,136,0.6);
+      animation: fadeIn 1s ease;
+    }
+
+    /* Animations */
+    @keyframes glow {
+      0% { text-shadow: 0 0 5px #00eaff, 0 0 10px #00eaff, 0 0 15px #00eaff; }
+      100% { text-shadow: 0 0 12px #00eaff, 0 0 25px #00eaff, 0 0 35px #00eaff; }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes floatIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    /* Loading overlay */
+    #loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.3);
+      display: none;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      .container { width: 90%; padding: 25px; }
+      h1 { font-size: 24px; }
+    }
+  </style>
+<!--<style>
+/* Background */
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #48a1a9, #82a7ab);
+  background-size: 400% 400%;
+  animation: gradientBG 15s ease infinite;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  overflow: hidden;
+}
+@keyframes gradientBG {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Container */
+.container {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  padding: 40px;
+  width: 420px;
+  text-align: center;
+  backdrop-filter: blur(15px);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+  animation: fadeIn 1s ease-in-out;
+  position: relative;
+  z-index: 2;
+}
+
+/* White glowing title */
+h1 {
+  font-size: 28px;
+  margin-bottom: 25px;
+  color: #ffffff;
+  text-shadow: 0 0 8px #ffffff, 0 0 15px #ffffff, 0 0 20px #ffffff;
+  animation: glow 2s ease-in-out infinite alternate;
+}
+@keyframes glow {
+  0% { text-shadow: 0 0 5px #ffffff, 0 0 10px #ffffff, 0 0 15px #ffffff; }
+  100% { text-shadow: 0 0 12px #ffffff, 0 0 25px #ffffff, 0 0 35px #ffffff; }
+}
+
+/* Drop Zone */
+.drop-zone {
+  border: 2px dashed rgba(255, 255, 255, 0.6);
+  border-radius: 15px;
+  padding: 35px;
+  margin-bottom: 25px;
+  background: rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+  color: #fff;
+  transition: all 0.3s ease;
+}
+.drop-zone:hover { background: rgba(255,255,255,0.15); transform: scale(1.02); border-color: #fff; }
+.drop-zone input { display: none; }
+
+/* Button */
+button {
+  background: linear-gradient(135deg, #60a8af, #82a7ab);
+  border: none;
+  color: white;
+  padding: 12px 30px;
+  border-radius: 30px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+}
+button:hover {
+  background: linear-gradient(135deg, #60a8af, #82a7ab);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+}
+
+/* Preview */
+#preview {
+  max-width: 90%;
+  border-radius: 12px;
+  margin-top: 15px;
+  display: none;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+}
+
+/* Result */
+.result {
+  margin-top: 20px;
+  font-size: 18px;
+  color: #fff;
+  font-weight: 500;
+  padding: 12px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.1);
+  animation: fadeInUp 0.8s ease;
+}
+
+/* Floating animals on background */
+.animal {
+  position: absolute;
+  width: 70px;
+  opacity: 0.7;
+  animation: float 18s infinite linear;
+  z-index: 1;
+}
+.animal:nth-child(1) { top: 10%; left: -100px; animation-delay: 0s; }
+.animal:nth-child(2) { top: 30%; left: -120px; animation-delay: 5s; }
+.animal:nth-child(3) { top: 60%; left: -140px; animation-delay: 10s; }
+.animal:nth-child(4) { top: 80%; left: -160px; animation-delay: 15s; }
+
+@keyframes float { from { transform: translateX(0) rotate(0deg); } to { transform: translateX(120vw) rotate(360deg); } }
+@keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Loading overlay */
+#loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.3);
+  display: none;
+  z-index: 10;
+  pointer-events: none;
+}
+.floating-animal {
+  position: absolute;
+  width: 70px;
+  opacity: 0.8;
+  animation: float 12s infinite linear;
+}
+.floating-animal:nth-child(1) { top: 10%; left: -100px; animation-delay: 0s; }
+.floating-animal:nth-child(2) { top: 30%; left: -120px; animation-delay: 3s; }
+.floating-animal:nth-child(3) { top: 60%; left: -140px; animation-delay: 6s; }
+.floating-animal:nth-child(4) { top: 80%; left: -160px; animation-delay: 9s; }
+
+@media (max-width: 480px) {
+  .container { width: 90%; padding: 25px; }
+  h1 { font-size: 24px; }
+  .animal, .floating-animal { width: 50px; }
+}
+</style>
+-->
+</head>
+<body>
+
+<!-- Floating animals on background -->
+<img src="{{ url_for('static', filename='images/butterfly.png') }}" class="animal" alt="butterfly">
+<img src="{{ url_for('static', filename='images/squirrel.png') }}" class="animal" alt="squirrel">
+<img src="{{ url_for('static', filename='images/dog.png') }}" class="animal" alt="dog">
+<img src="{{ url_for('static', filename='images/cat.png') }}" class="animal" alt="cat">
+<img src="{{ url_for('static', filename='images/horse.png') }}" class="animal" alt="horse">
+<img src="{{ url_for('static', filename='images/elephant.png') }}" class="animal" alt="elephant">
+<img src="{{ url_for('static', filename='images/sheep.png') }}" class="animal" alt="sheep">
+<img src="{{ url_for('static', filename='images/cow.png') }}" class="animal" alt="cow">
+
+<!-- Loading overlay -->
+<div id="loading-overlay">
+  <img src="{{ url_for('static', filename='images/butterfly.png') }}" class="floating-animal" alt="butterfly">
+  <img src="{{ url_for('static', filename='images/squirrel.png') }}" class="floating-animal" alt="squirrel">
+  <img src="{{ url_for('static', filename='images/dog.png') }}" class="floating-animal" alt="dog">
+  <img src="{{ url_for('static', filename='images/cat.png') }}" class="floating-animal" alt="cat">
+  <img src="{{ url_for('static', filename='images/horse.png') }}" class="floating-animal" alt="horse">
+  <img src="{{ url_for('static', filename='images/elephant.png') }}" class="floating-animal" alt="elephant">
+  <img src="{{ url_for('static', filename='images/sheep.png') }}" class="floating-animal" alt="sheep">
+  <img src="{{ url_for('static', filename='images/cow.png') }}" class="floating-animal" alt="cow">
+</div>
+
+<!-- Main container -->
+<div class="container">
+  <h1>🐾 Animal Species Predictor</h1>
+  <form method="POST" enctype="multipart/form-data">
+    <label class="drop-zone">
+      Drag & Drop an image or Click to Upload
+      <input type="file" id="file-upload" name="file" accept="image/*" onchange="previewImage(event)">
+    </label>
+    <button type="submit">Predict</button>
+  </form>
+
+  <img id="preview" src="#" alt="Image Preview">
+  {% if prediction %}
+    <div class="result">Prediction: {{ prediction }}</div>
+  {% endif %}
+</div>
+
+<script>
+// Image preview
+function previewImage(event) {
+  const preview = document.getElementById('preview');
+  preview.src = URL.createObjectURL(event.target.files[0]);
+  preview.style.display = 'block';
+}
+
+// Show loading overlay while submitting
+const form = document.querySelector('form');
+const loading = document.getElementById('loading-overlay');
+form.addEventListener('submit', () => {
+  loading.style.display = 'block';
+});
+</script>
+</body>
+</html>
